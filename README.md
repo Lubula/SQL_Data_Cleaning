@@ -1,2 +1,16 @@
 # SQL_Data_Cleaning
-In this project we take raw housing data and transform it in SQL Server to make it more usable for analysis.
+
+Problem Statement (Buiness Task)
+Collecting (importing) raw housing data to clean and transform with DB Browser for SQL Lite to make it more usable for analysis.
+
+Data source : https://www.kaggle.com/tmthyjames/nashville-housing-data
+
+Project Task 
+1. Import data to DB browser for SQL Lite
+2. standerdise Sell date format
+3. Populate the property address data (poulating blank )
+4. Breaking up addrees into individual columns (Seperate address and city)
+5. adding key statements
+6. deleting unsed columns
+7. Removing duplicates 
+
