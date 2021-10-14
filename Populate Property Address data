@@ -1,0 +1,36 @@
+-- Populate Property Address data
+
+Select *
+From Nashville
+Where PropertyAddress is null
+
+Select *
+From Nashville
+--Where PropertyAddress is null
+order by ParcelID
+
+-- with the place Id & property address being linked , where it shows null on PropertyAddress
+-- lets place the place ID as address as there linked 
+-- we do a self join 1st
+SELECT *
+FROM Nashville as a -- the alias a & b simply for simplicity
+JOIN Nashville as b
+    on a.ParcelID = b.ParcelID
+	and a.[UniqueID]<>b.UniqueID -- the uniqueId is spcidic, never repeats themselves
+
+
+
+Select a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress,b.PropertyAddress)
+From Nashville a
+JOIN Nashville b
+	on a.ParcelID = b.ParcelID
+	AND a.[UniqueID ] <> b.[UniqueID ]
+Where a.PropertyAddress is null
+
+Update a
+SET PropertyAddress = ISNULL(a.PropertyAddress,b.PropertyAddress)
+From Nashvillea
+JOIN Nashville b
+	on a.ParcelID = b.ParcelID
+	AND a.[UniqueID ] <> b.[UniqueID ]
+Where a.PropertyAddress is null
