@@ -1,0 +1,54 @@
+-- Change Y and N to Yes and No in "Sold as Vacant" field
+-- lete understand whats happening in the yes, no rows 
+
+SELECT DISTINCT(SoldAsVacant), count(SoldAsVacant)
+FROM Nashville
+Group by SoldAsVacant
+order by 2
+
+# mini print out
+soldasvacant count(soldasvacant)
+Y	52
+N	399
+Yes	4623
+No	51403
+
+
+-- the majority appear as yess and no rather than y or n 
+--lets converge the two using a join statement
+
+Select SoldAsVacant
+, CASE WHEN SoldAsVacant = 'Y' THEN 'Yes'
+	   WHEN SoldAsVacant = 'N' THEN 'No'
+	   ELSE SoldAsVacant
+	   END
+From Nashville
+
+# mini print out
+sold as vacant case statement
+No	No
+No	No
+No	No
+No	No
+No	No
+No	No
+No	No
+
+
+UPDATE Nashville
+SET SoldAsVacant = CASE when SoldAsVacant = 'Y' THEN 'Yes'
+	   When SoldAsVacant = 'N' THEN 'No'
+	   ELSE SoldAsVacant
+	   END
+
+
+-- view again if the update worked 
+SELECT DISTINCT(SoldAsVacant), count(SoldAsVacant)
+FROM Nashville
+Group by SoldAsVacant
+order by 2
+
+# mini print out 
+
+Yes	4675
+No	51802
