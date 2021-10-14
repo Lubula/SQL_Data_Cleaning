@@ -18,18 +18,19 @@ October 10, 2014
 July 16, 2014
 
 
-Select saleDateConverted, CONVERT(Date,SaleDate)
-From Nashville
-
-or 
-
 Update Nashville
 SET SaleDate = CONVERT(Date,SaleDate)
 
-## If it doesn't Update properly
+-- update with a column first 
+-- then alter the tabkle to add the column
 
 ALTER TABLE Nashville
 Add SaleDateConverted Date;
 
-Update Nashville
-SET SaleDateConverted = CONVERT(Date,SaleDate)
+-- check if its been added to TABLE
+SELECT *
+FROM Nashville
+
+-- update with the coverted the date column 
+UPDATE Nashville
+SET SaleDateConverted = convert(Date,SaleDate)
