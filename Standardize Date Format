@@ -1,0 +1,22 @@
+
+# Standardize Date Format
+# firstly import the data onto the DB Browser for SQL Lite. 
+# Renamed the table (database) Nashville, for simplicity caling functions and writing code 
+# below is SQL code, I struggled to find a way to change this using my SQL lite (as it doesnt have data types or convert function) 
+# only found the strftime() functio  which I actually struggled with
+
+Select saleDateConverted, CONVERT(Date,SaleDate)
+From Nashville
+
+or 
+
+Update Nashville
+SET SaleDate = CONVERT(Date,SaleDate)
+
+## If it doesn't Update properly
+
+ALTER TABLE Nashville
+Add SaleDateConverted Date;
+
+Update Nashville
+SET SaleDateConverted = CONVERT(Date,SaleDate)
