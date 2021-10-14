@@ -2,7 +2,7 @@
 
 Problem Statement (Buiness Task):
 
-Collecting (importing) raw housing data to clean and transform with DB Browser for SQL Lite to make it more usable for analysis.
+Collecting (importing) raw housing data to clean and transform with SQL to make it more usable for analysis.
 
 Data source : https://www.kaggle.com/tmthyjames/nashville-housing-data
 
