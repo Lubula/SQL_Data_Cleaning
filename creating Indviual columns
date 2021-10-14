@@ -1,0 +1,70 @@
+-- Breaking out Address into Individual Columns (Address, City, State)
+
+
+Select PropertyAddress
+From Nashville
+--Where PropertyAddress is null
+--order by ParcelID
+
+-- will be using substr
+
+SELECT
+substr(PropertyAddress, 1, char(',', PropertyAddress) -1 ) as Address
+, substr(PropertyAddress, char(',', PropertyAddress) + 1 , length(PropertyAddress)) as Address
+
+From Nashville
+
+-- we cant seperate two values from columns without creating two new columns
+
+ALTER TABLE Nashville
+Add PropertySplitAddress Nvarchar(255);
+
+Update Nashville
+SET PropertySplitAddress = SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress) -1 )
+
+
+ALTER TABLE Nashville
+Add PropertySplitCity Nvarchar(255);
+
+Update Nashville
+SET PropertySplitCity = SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress) + 1 , LEN(PropertyAddress))
+
+SELECT *
+FROM Nashville
+-- check whats going on in the table 
+
+Select OwnerAddress
+From Nashville
+
+Select
+PARSENAME(REPLACE(OwnerAddress, ',', '.') , 3)
+,PARSENAME(REPLACE(OwnerAddress, ',', '.') , 2)
+,PARSENAME(REPLACE(OwnerAddress, ',', '.') , 1)
+From Nashville
+
+
+
+ALTER TABLE Nashville
+ADD OwnerSplitAddress Nvarchar(255);
+
+UPDATE Nashville
+SET OwnerSplitAddress = PARSENAME(REPLACE(OwnerAddress, ',', '.') , 3)
+
+
+ALTER TABLE Nashville
+Add OwnerSplitCity Nvarchar(255);
+
+Update Nashville
+SET OwnerSplitCity = PARSENAME(REPLACE(OwnerAddress, ',', '.') , 2)
+
+
+
+ALTER TABLE Nashville
+Add OwnerSplitState Nvarchar(255);
+
+Update Nashville
+SET OwnerSplitState = PARSENAME(REPLACE(OwnerAddress, ',', '.') , 1)
+
+
+Select *
+From Nashville
