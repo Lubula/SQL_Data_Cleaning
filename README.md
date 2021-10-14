@@ -1,6 +1,7 @@
 # SQL_Data_Cleaning
 
-Problem Statement (Buiness Task)
+Problem Statement (Buiness Task):
+
 Collecting (importing) raw housing data to clean and transform with DB Browser for SQL Lite to make it more usable for analysis.
 
 Data source : https://www.kaggle.com/tmthyjames/nashville-housing-data
