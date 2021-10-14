@@ -11,7 +11,7 @@ Project Task
 2. standerdise Sell date format
 3. Populate the property address data (poulating blank )
 4. Breaking up addres into individual columns (Seperate address,state and city)
-5. adding key statements
-6. deleting unsed columns
+5. Adding key statements, from yes or no statements 
+6. Deleting unsed columns
 7. Removing duplicates 
 
