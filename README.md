@@ -10,7 +10,7 @@ Project Task
 1. Import data to DB browser for SQL Lite
 2. standerdise Sell date format
 3. Populate the property address data (poulating blank )
-4. Breaking up addrees into individual columns (Seperate address and city)
+4. Breaking up addres into individual columns (Seperate address,state and city)
 5. adding key statements
 6. deleting unsed columns
 7. Removing duplicates 
