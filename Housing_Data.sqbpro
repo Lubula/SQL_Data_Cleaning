@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/mapul/Downloads/archive/Housing_Data.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2997"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,9:mainNashville"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="NashVille Housing" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="93"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Nashville" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="65"/><column index="2" value="108"/><column index="3" value="169"/><column index="4" value="290"/><column index="5" value="124"/><column index="6" value="67"/><column index="7" value="117"/><column index="8" value="98"/><column index="9" value="300"/><column index="10" value="300"/><column index="11" value="63"/><column index="12" value="181"/><column index="13" value="75"/><column index="14" value="93"/><column index="15" value="76"/><column index="16" value="67"/><column index="17" value="72"/><column index="18" value="58"/><column index="19" value="63"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Nashville Housing Data for Data Cleaning" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="65"/><column index="2" value="108"/><column index="3" value="169"/><column index="4" value="290"/><column index="5" value="124"/><column index="6" value="67"/><column index="7" value="117"/><column index="8" value="98"/><column index="9" value="300"/><column index="10" value="300"/><column index="11" value="63"/><column index="12" value="181"/><column index="13" value="75"/><column index="14" value="93"/><column index="15" value="76"/><column index="16" value="67"/><column index="17" value="72"/><column index="18" value="58"/><column index="19" value="63"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">/*
+Cleaning Data in SQL Queries
+*/
+
+
+Select *
+From Nashville
+
+--------------------------------------------------------------------------------------------------------------------------
+
+-- Standardize Date Format
+
+
+Update Nashville
+SET SaleDate = CONVERT(Date,SaleDate)
+
+-- If it doesn't Update properly
+-- update with a column first 
+
+ALTER TABLE Nashville
+Add SaleDateConverted Date;
+
+-- check if its been added to TABLE
+SELECT *
+FROM Nashville
+
+-- update and covert the date column 
+UPDATE Nashville
+SET SaleDateConverted = convert(Date,SaleDate)
+
+
+SELECT *
+From Nashville
+ --------------------------------------------------------------------------------------------------------------------------
+
+-- Populate Property Address data
+
+Select *
+From Nashville
+Where PropertyAddress is null
+
+Select *
+From Nashville
+--Where PropertyAddress is null
+order by ParcelID
+
+-- with the place Id &amp; property address being linked , where it shows null on PropertyAddress
+-- lets place the place ID as address as there linked 
+-- we do a self join 1st
+SELECT *
+FROM Nashville as a -- the alias a &amp; b simply for simplicity
+JOIN Nashville as b
+    on a.ParcelID = b.ParcelID
+	and a.[UniqueID]&lt;&gt;b.UniqueID -- the uniqueId is spcidic, never repeats themselves
+
+
+
+Select a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress,b.PropertyAddress)
+From Nashville a
+JOIN Nashville b
+	on a.ParcelID = b.ParcelID
+	AND a.[UniqueID ] &lt;&gt; b.[UniqueID ]
+Where a.PropertyAddress is null
+
+Update a
+SET PropertyAddress = ISNULL(a.PropertyAddress,b.PropertyAddress)
+From Nashvillea
+JOIN Nashville b
+	on a.ParcelID = b.ParcelID
+	AND a.[UniqueID ] &lt;&gt; b.[UniqueID ]
+Where a.PropertyAddress is null
+
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+-- Breaking out Address into Individual Columns (Address, City, State)
+
+
+Select PropertyAddress
+From Nashville
+--Where PropertyAddress is null
+--order by ParcelID
+
+-- will be using substr
+
+SELECT
+substr(PropertyAddress, 1, char(',', PropertyAddress) -1 ) as Address
+, substr(PropertyAddress, char(',', PropertyAddress) + 1 , length(PropertyAddress)) as Address
+
+From Nashville
+
+-- we cant seperate two values from columns without creating two new columns
+
+ALTER TABLE Nashville
+Add PropertySplitAddress Nvarchar(255);
+
+Update Nashville
+SET PropertySplitAddress = SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress) -1 )
+
+
+ALTER TABLE Nashville
+Add PropertySplitCity Nvarchar(255);
+
+Update Nashville
+SET PropertySplitCity = SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress) + 1 , LEN(PropertyAddress))
+
+SELECT *
+FROM Nashville
+-- check whats going on in the table 
+
+Select OwnerAddress
+From Nashville
+
+Select
+PARSENAME(REPLACE(OwnerAddress, ',', '.') , 3)
+,PARSENAME(REPLACE(OwnerAddress, ',', '.') , 2)
+,PARSENAME(REPLACE(OwnerAddress, ',', '.') , 1)
+From Nashville
+
+
+
+ALTER TABLE Nashville
+ADD OwnerSplitAddress Nvarchar(255);
+
+UPDATE Nashville
+SET OwnerSplitAddress = PARSENAME(REPLACE(OwnerAddress, ',', '.') , 3)
+
+
+ALTER TABLE Nashville
+Add OwnerSplitCity Nvarchar(255);
+
+Update Nashville
+SET OwnerSplitCity = PARSENAME(REPLACE(OwnerAddress, ',', '.') , 2)
+
+
+
+ALTER TABLE Nashville
+Add OwnerSplitState Nvarchar(255);
+
+Update Nashville
+SET OwnerSplitState = PARSENAME(REPLACE(OwnerAddress, ',', '.') , 1)
+
+
+Select *
+From Nashville
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
+-- Change Y and N to Yes and No in &quot;Sold as Vacant&quot; field
+-- lete understand whats happening in the yes, no rows 
+
+SELECT DISTINCT(SoldAsVacant), count(SoldAsVacant)
+FROM Nashville
+Group by SoldAsVacant
+order by 2
+
+-- the majority appear as yess and no rather than y or n 
+--lets converge the two using a join statement
+Select SoldAsVacant
+, CASE WHEN SoldAsVacant = 'Y' THEN 'Yes'
+	   WHEN SoldAsVacant = 'N' THEN 'No'
+	   ELSE SoldAsVacant
+	   END
+From Nashville
+
+
+UPDATE Nashville
+SET SoldAsVacant = CASE when SoldAsVacant = 'Y' THEN 'Yes'
+	   When SoldAsVacant = 'N' THEN 'No'
+	   ELSE SoldAsVacant
+	   END
+
+
+-- view again if the update worked 
+SELECT DISTINCT(SoldAsVacant), count(SoldAsVacant)
+FROM Nashville
+Group by SoldAsVacant
+order by 2
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Remove Duplicates then removing COLUMNs
+-- standard practise is to do delete columns
+-- removing duplicate ROWs,  create a CTE
+
+WITH RowNumCTE AS(
+SELECT *,
+	ROW_NUMBER() OVER (
+	PARTITION BY ParcelID,
+				 PropertyAddress,
+				 SalePrice,
+				 SaleDate,
+				 LegalReference
+				 ORDER BY
+					UniqueID
+					) row_num
+
+FROM Nashville
+--order by ParcelID
+)
+
+Select *
+From RowNumCTE
+Where row_num &gt; 1
+Order by PropertyAddress
+
+
+
+Select *
+From Nashville
+-- check if the duplicates are gone 
+
+
+---------------------------------------------------------------------------------------------------------
+
+-- Delete Unused Columns
+-- better option would be hide data or work with a duplicate file of the data before we even think of deleting COLUMNS
+
+
+Select *
+From Nashville
+
+---- other SQl dont accept a single detele script, so delete colums indivdually 
+ALTER TABLE Nashville
+DROP COLUMN TaxDistrict
+
+
+ALTER TABLE Nashville
+DROP COLUMN PropertyAddress
+
+
+ALTER TABLE Nashville
+DROP COLUMN SaleDate
+
+
+ALTER TABLE Nashville
+DROP COLUMN OwnerAddress
+
+-- full script
+ALTER TABLE Nashville
+DROP COLUMN OwnerAddress, TaxDistrict, PropertyAddress, SaleDate
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
