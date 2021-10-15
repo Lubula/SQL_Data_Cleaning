@@ -1,0 +1,59 @@
+-- Remove Duplicates then removing COLUMNs
+-- standard practise is to do delete columns
+-- removing duplicate ROWs, create a CTE
+
+WITH RowNumCTE AS(
+SELECT *,
+	ROW_NUMBER() OVER (
+	PARTITION BY ParcelID,
+				 PropertyAddress,
+				 SalePrice,
+				 SaleDate,
+				 LegalReference
+				 ORDER BY
+					UniqueID
+					) row_num
+
+FROM Nashville
+--order by ParcelID
+)
+
+Select *
+From RowNumCTE
+Where row_num > 1
+Order by PropertyAddress
+
+
+
+Select *
+From Nashville
+-- check if the duplicates are gone 
+
+
+-- Delete Unused Columns
+-- better option would be hide data or work with a duplicate file of the data before we even think of deleting COLUMNS
+
+
+Select *
+From Nashville
+
+---- other SQl dont accept a single detele script, so delete colums indivdually 
+ALTER TABLE Nashville
+DROP COLUMN TaxDistrict
+
+
+ALTER TABLE Nashville
+DROP COLUMN PropertyAddress
+
+
+ALTER TABLE Nashville
+DROP COLUMN SaleDate
+
+
+ALTER TABLE Nashville
+DROP COLUMN OwnerAddress
+
+-- full script
+ALTER TABLE Nashville
+DROP COLUMN OwnerAddress, TaxDistrict, PropertyAddress, SaleDate
+
